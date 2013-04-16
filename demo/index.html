@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>jquery.drag demo</title>
+<title>jquery.jqdrag demo</title>
 <style>
 	body{
 		padding:0;
@@ -80,7 +80,7 @@
 
     initLoc();
 
-	$('#drag').drag({
+	$('#drag').jqdrag({
 		type:'y',//移动类型: xy:自由移动(默认)  x:水平移动   y:纵向移动
 		trigger:'#trigger',//拖动的元素
 		ondragend:function(){
@@ -90,14 +90,14 @@
             log('Position:('+loc.x+","+loc.y+")");
         }
 	});
-	$('#drag1').drag({
+	$('#drag1').jqdrag({
 		type:'x',
 		trigger:'#trigger1',
 		ondragend:function(){
             log('水平方向拖动完毕');
         }
 	});
-	$('#drag2').drag({
+	$('#drag2').jqdrag({
 		onbeforedrag:function(){
 			log('开始脱啦~~');
 		},
@@ -110,7 +110,7 @@
 			this.style.background = "rgba(255,0,0,0.5)";
 		}
 	});
-    $('#drag3').drag({
+    $('#drag3').jqdrag({
         minX:0,
         minY:0,
         maxX:$(document).width()-$('#drag').width()-4,
@@ -119,7 +119,7 @@
 
     setTimeout(function(){
         //drag实例的链式调用，无法使用jQuery操作DOM的方法 [不推荐]
-        $('#drag2').drag('getObject')
+        $('#drag2').jqdrag('getObject')
                 .setOption({maxX:400,maxY:400,minX:10,minY:10})
                 .update();
         $('#drag2').html('<div id="trigger2">我也被限制了</div>' +
@@ -127,14 +127,14 @@
                 '只能在(10,10)到(400,400)范围内拖动了');
 
         //jQuery的链式调用，可以使用jQuery操作DOM的方法  [推荐]
-        $('#drag3').drag('setOption',{maxX:500,maxY:400,minX:100,minY:100})
-                   .drag('update')
+        $('#drag3').jqdrag('setOption',{maxX:500,maxY:400,minX:100,minY:100})
+                   .jqdrag('update')
                    .css({'background':'red'})
                    .html('<div id="trigger3">被限制了</div>' +
                         '此时我已经被限制范围了，' +
                         '只能在(100,100)到(500,400)范围内拖动了');
 
-        $('#drag1').drag('setOption',{type:'xy'})
+        $('#drag1').jqdrag('setOption',{type:'xy'})
                 .html('<div id="trigger1">我自由了</div>' +
                 '此时我已经自由了，' +
                 '可以随便拖了');

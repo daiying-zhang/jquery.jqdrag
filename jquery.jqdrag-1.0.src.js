@@ -6,7 +6,7 @@
  * Site: http://sanjh.cn
  */
 ;(function($) {
-    $.fn.drag = function(option) {
+    $.fn.jqdrag = function(option) {
         var //$this = this,
             defaults = {
                 type: 'xy',
