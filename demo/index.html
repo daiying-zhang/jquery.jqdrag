@@ -1,0 +1,150 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>jquery.drag demo</title>
+<style>
+	body{
+		padding:0;
+		margin:0;
+        font: 15px/1.3em "Microsoft Yahei";
+	}
+	#drag,#drag1,#drag2,#drag3{
+		border:#09F 2px solid;
+		border-radius:5px;
+		width:200px;
+		height:120px;
+		background:#09F;
+		background:rgba(0,153,255,0.4);
+		position:absolute;
+		z-index:1000;
+	}
+    #drag3,#drag2{
+        background-color: rgba(255,0,0,0.4);
+        cursor: move;
+    }
+    #trigger{
+        background:orchid;
+        cursor: move;
+    }
+    #trigger1{
+		background:#09F;
+        cursor: move;
+	}
+    #trigger2,#trigger3{
+		background:orange;
+	}
+    #console{
+        border: 1px dashed orange;
+        border-radius: 3px;
+        height: 200px;
+        overflow: auto;
+        width: 400px;
+        padding: 10px;
+    }
+</style>
+</head>
+
+<body>
+<div id="drag">
+	<div id="trigger">Drag This</div>
+	只能竖直方向拖动,只能拖上面哦
+</div>
+<div id="drag1">
+	<div id="trigger1">Drag This</div>
+	只能水平方向拖动,只能拖上面哦
+</div>
+<div id="drag2">
+	<div id="trigger2">暂无限制</div>
+	随便拖,而且拖哪儿都可以哦
+</div>
+<div id="drag3">
+    <div id="trigger3">Wherever 10s后限制</div>
+    随便拖,但是不能拖出可是区域外面哦
+</div>
+<div id="console"></div>
+<script type="text/javascript" src="jquery-1.8.1.min.js"></script>
+<script type="text/javascript" src="../jquery.jqdrag-1.0.min.js"></script>
+<script>
+
+    function initLoc(){
+        var docW = $(document).width(),
+            docH = $(document).height();
+        $('#drag,#drag1,#drag2,#drag3').each(function(){
+            $(this).stop().animate({
+                left:(Math.max(0,Math.min(docW-2*$(this).width(),Math.random() * docW))) + 'px',
+                top:(Math.max(0,Math.min(docH-2*$(this).height(),Math.random() * docH))) + 'px'
+            },500);
+        })
+    }
+
+    initLoc();
+
+	$('#drag').drag({
+		type:'y',//移动类型: xy:自由移动(默认)  x:水平移动   y:纵向移动
+		trigger:'#trigger',//拖动的元素
+		ondragend:function(){
+            log('垂直方向拖动完毕');
+        },
+        ondrag:function(dis,loc){
+            log('Position:('+loc.x+","+loc.y+")");
+        }
+	});
+	$('#drag1').drag({
+		type:'x',
+		trigger:'#trigger1',
+		ondragend:function(){
+            log('水平方向拖动完毕');
+        }
+	});
+	$('#drag2').drag({
+		onbeforedrag:function(){
+			log('开始脱啦~~');
+		},
+		ondragend:function(){
+			this.style.background = "";
+            log('拖动完毕！');
+		},
+		ondrag:function(dis,loc){
+			log('Position:('+loc.x+","+loc.y+")");
+			this.style.background = "rgba(255,0,0,0.5)";
+		}
+	});
+    $('#drag3').drag({
+        minX:0,
+        minY:0,
+        maxX:$(document).width()-$('#drag').width()-4,
+        maxY:$(document).height()-$('#drag').height()-4
+    });
+
+    setTimeout(function(){
+        //drag实例的链式调用，无法使用jQuery操作DOM的方法 [不推荐]
+        $('#drag2').drag('getObject')
+                .setOption({maxX:400,maxY:400,minX:10,minY:10})
+                .update();
+        $('#drag2').html('<div id="trigger2">我也被限制了</div>' +
+                '此时我已经被限制范围了，' +
+                '只能在(10,10)到(400,400)范围内拖动了');
+
+        //jQuery的链式调用，可以使用jQuery操作DOM的方法  [推荐]
+        $('#drag3').drag('setOption',{maxX:500,maxY:400,minX:100,minY:100})
+                   .drag('update')
+                   .css({'background':'red'})
+                   .html('<div id="trigger3">被限制了</div>' +
+                        '此时我已经被限制范围了，' +
+                        '只能在(100,100)到(500,400)范围内拖动了');
+
+        $('#drag1').drag('setOption',{type:'xy'})
+                .html('<div id="trigger1">我自由了</div>' +
+                '此时我已经自由了，' +
+                '可以随便拖了');
+    },10000);
+
+    function log(msg){
+        var con = $('#console');
+        con.html(con.html() + msg + '<br/>');
+        con.scrollTop(con[0].scrollHeight);
+    }
+</script>
+</body>
+</html>
