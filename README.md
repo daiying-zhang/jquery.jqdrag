@@ -26,6 +26,19 @@
 		}
 	});
 
+	//对外方法
+	setTimeout(function(){
+        	//drag实例的链式调用，无法使用jQuery操作DOM的方法 [不推荐]
+        	$('#drag2').jqdrag('getObject')
+                	.setOption({maxX:400,maxY:400,minX:10,minY:10})
+                	.update();
+
+        	//jQuery的链式调用，可以使用jQuery操作DOM的方法  [推荐]
+        	$('#drag3').jqdrag('setOption',{maxX:500,maxY:400,minX:100,minY:100})
+                   	.jqdrag('update')
+                   	.css({'background':'red'});
+	},10000);
+
 ### E-Mail
   97532151@qq.com
 
