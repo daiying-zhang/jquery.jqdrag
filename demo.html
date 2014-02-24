@@ -1,0 +1,152 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>jquery.jqdrag demo={{site.title}}</title>
+    <style>
+        body{
+            padding:0;
+            margin:0;
+            font: 15px/1.3em "Microsoft Yahei";
+        }
+        #drag,#drag1,#drag2,#drag3{
+            border:#09F 2px solid;
+            border-radius:5px;
+            width:200px;
+            height:120px;
+            background:#09F;
+            background:rgba(0,153,255,0.4);
+            position:absolute;
+            z-index:1000;
+        }
+        #drag3,#drag2{
+            background-color: rgba(255,0,0,0.4);
+            cursor: move;
+        }
+        #trigger{
+            background:orchid;
+            cursor: move;
+        }
+        #trigger1{
+            background:#09F;
+            cursor: move;
+        }
+        #trigger2,#trigger3{
+            background:orange;
+        }
+        #console{
+            border: 1px dashed orange;
+            border-radius: 3px;
+            height: 200px;
+            overflow: auto;
+            width: 400px;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+<div id="drag">
+    <div id="trigger">Drag This</div>
+    只能竖直方向拖动,只能拖上面哦
+</div>
+<div id="drag1">
+    <div id="trigger1">Drag This</div>
+    只能水平方向拖动,只能拖上面哦
+</div>
+<div id="drag2">
+    <div id="trigger2">暂无限制</div>
+    随便拖,而且拖哪儿都可以哦
+</div>
+<div id="drag3">
+    <div id="trigger3">Wherever 10s后限制</div>
+    随便拖,但是不能拖出可是区域外面哦
+</div>
+<div id="console"></div>
+<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.3.min.js"></script>
+<script>
+    (function(a){a.fn.jqdrag=function(d){var f={type:"xy",trigger:"self",maxX:+Infinity,maxY:+Infinity,minX:-Infinity,minY:-Infinity},c="JQDrag",e=this.data(c);if(typeof d==="string"){if(e){if(d==="getObject"){return e;}else{if(e[d]){e[d].apply(e,Array.prototype.slice.call(arguments,1));}return this;}}else{throw new Error("This object is ont available!");}}return this.each(function(){var g=new b(a(this),a.extend({},f,d));a(this).data(c,g);});};function b(c,g){this.obj=c;this.settings=g;this.trigger=this.settings.trigger=="self"?this.obj:a(this.settings.trigger);var i=false,e={x:0,y:0},h={x:0,y:0},k={x:0,y:0},l={x:0,y:0},f={x:0,y:0},d=this.settings,j=this.obj;this.trigger.live("mousedown",function(m){if(d.onbeforedrag){if(d.onbeforedrag.call([0])==false){return false;}}e.x=m.pageX;e.y=m.pageY;k.x=parseInt(j.css("left"))||0;k.y=parseInt(j.css("top"))||0;a(document).bind("mousemove.jdrag",function(n){if(!i){i=true;}h.x=n.pageX;h.y=n.pageY;if(d.type=="xy"){l={x:Math.min(Math.max(k.x+h.x-e.x,d.minX),d.maxX),y:Math.min(Math.max(k.y+h.y-e.y,d.minY),d.maxY)};f={x:l.x-k.x,y:l.y-k.y};j.css({left:l.x+"px",top:l.y+"px"});}else{if(d.type=="x"){l={x:Math.min(Math.max(k.x+h.x-e.x,d.minX),d.maxX),y:parseInt(j.css("top"))};f={x:l.x-k.x,y:0};j.css({left:l.x+"px"});}else{if(d.type=="y"){l={x:parseInt(j.css("left")),y:Math.min(Math.max(k.y+h.y-e.y,d.minY),d.maxY)};f={x:0,y:l.y-k.y};j.css({top:l.y+"px"});}}}if(d.ondrag){d.ondrag.call(j[0],f,l);}});return false;});a(document).bind("mouseup.jqdrag",function(m){if(i){if(d.ondragend){d.ondragend.call(j[0],f);}}a(this).unbind("mousemove.jdrag");i=false;});}b.prototype.setOption=function(c,d){this.settings=a.extend(this.settings,c);d&&this.update();return this;};b.prototype.update=function(d){d&&this.setOption(d);var d=this.obj,c=this.settings;d.css({left:Math.max(c.minX,Math.min(parseInt(d.css("left")),c.maxX))+"px",top:Math.max(c.minY,Math.min(parseInt(d.css("top")),c.maxY))+"px"});return this;};})(jQuery);
+</script>
+<script>
+
+    function initLoc(){
+        var docW = $(document).width(),
+                docH = $(document).height();
+        $('#drag,#drag1,#drag2,#drag3').each(function(){
+            $(this).stop().animate({
+                left:(Math.max(0,Math.min(docW-2*$(this).width(),Math.random() * docW))) + 'px',
+                top:(Math.max(0,Math.min(docH-2*$(this).height(),Math.random() * docH))) + 'px'
+            },500);
+        })
+    }
+
+    initLoc();
+
+    $('#drag').jqdrag({
+        type:'y',//移动类型: xy:自由移动(默认)  x:水平移动   y:纵向移动
+        trigger:'#trigger',//拖动的元素
+        ondragend:function(){
+            log('垂直方向拖动完毕');
+        },
+        ondrag:function(dis,loc){
+            log('Position:('+loc.x+","+loc.y+")");
+        }
+    });
+    $('#drag1').jqdrag({
+        type:'x',
+        trigger:'#trigger1',
+        ondragend:function(){
+            log('水平方向拖动完毕');
+        }
+    });
+    $('#drag2').jqdrag({
+        onbeforedrag:function(){
+            log('开始脱啦~~');
+        },
+        ondragend:function(){
+            this.style.background = "";
+            log('拖动完毕！');
+        },
+        ondrag:function(dis,loc){
+            log('Position:('+loc.x+","+loc.y+")");
+            this.style.background = "rgba(255,0,0,0.5)";
+        }
+    });
+    $('#drag3').jqdrag({
+        minX:0,
+        minY:0,
+        maxX:$(document).width()-$('#drag').width()-4,
+        maxY:$(document).height()-$('#drag').height()-4
+    });
+
+    setTimeout(function(){
+        //drag实例的链式调用，无法使用jQuery操作DOM的方法 [不推荐]
+        $('#drag2').jqdrag('getObject')
+                .setOption({maxX:400,maxY:400,minX:10,minY:10})
+                .update();
+        $('#drag2').html('<div id="trigger2">我也被限制了</div>' +
+                '此时我已经被限制范围了，' +
+                '只能在(10,10)到(400,400)范围内拖动了');
+
+        //jQuery的链式调用，可以使用jQuery操作DOM的方法  [推荐]
+        $('#drag3').jqdrag('setOption',{maxX:500,maxY:400,minX:100,minY:100})
+                .jqdrag('update')
+                .css({'background':'red'})
+                .html('<div id="trigger3">被限制了</div>' +
+                        '此时我已经被限制范围了，' +
+                        '只能在(100,100)到(500,400)范围内拖动了');
+
+        $('#drag1').jqdrag('setOption',{type:'xy'})
+                .html('<div id="trigger1">我自由了</div>' +
+                        '此时我已经自由了，' +
+                        '可以随便拖了');
+    },10000);
+
+    function log(msg){
+        var con = $('#console');
+        con.html(con.html() + msg + '<br/>');
+        con.scrollTop(con[0].scrollHeight);
+    }
+</script>
+</body>
+</html>
