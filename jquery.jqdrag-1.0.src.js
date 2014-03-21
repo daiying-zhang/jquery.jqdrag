@@ -53,7 +53,7 @@
             opt = this.settings,
             _this = this.obj;
 
-        this.trigger.live('mousedown',function(e) {
+        this.trigger.on('mousedown',function(e) {
             //onbeforedrag
             if(opt.onbeforedrag) {
                 if(opt.onbeforedrag.call([0]) == false) {
